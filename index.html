@@ -156,6 +156,10 @@ label.lbl{display:block;font-weight:800;margin:20px 0 8px;font-size:1.05rem}
 .cie-back .digits,.cie-back .digits.d8{gap:4px}
 .cie-back .digits .digit,.cie-back .digits.d8 .digit{width:calc((100% - 28px)/8);aspect-ratio:auto;height:44px;font-size:26px;border-radius:9px}
 .cie-back .empty-code{padding:8px;font-size:16px}
+.savebar{position:sticky;bottom:0;z-index:5;margin-top:24px;padding:16px 0 calc(12px + env(safe-area-inset-bottom,0px));
+  background:linear-gradient(to bottom,transparent,var(--bg) 22px)}
+.savebar .msg{margin:0 0 10px;background:var(--danger-soft);border-radius:12px;padding:10px 12px}
+.savebar .btn{box-shadow:0 6px 18px rgba(31,79,209,.28)}
 .xpanel{background:var(--surface);border-radius:18px;box-shadow:var(--shadow);padding:6px 16px;margin-top:12px;text-align:left}
 .xrow{padding:12px 0;border-bottom:1px solid var(--line)}
 .xrow:last-child{border-bottom:0}
@@ -176,11 +180,12 @@ label.lbl{display:block;font-weight:800;margin:20px 0 8px;font-size:1.05rem}
 .vic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:var(--ok-soft);color:var(--ok);flex:none}
 .vic svg{width:26px;height:26px}
 .vlabel{flex:1;min-width:0}
-.vlabel b{display:block;font-size:1.08rem;line-height:1.25}
+.vlabel b{display:block;font-size:1.08rem;line-height:1.25;overflow-wrap:anywhere}
 .vlabel .muted{font-size:.9rem;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vbtn svg{width:24px;height:24px;display:block;margin:auto}
 .vbtn.icon{min-width:56px;padding:0}
-.vbtn{min-height:52px;min-width:96px;padding:0 16px;border-radius:14px;background:var(--primary);color:var(--primary-ink);font-weight:800}
+.vbtn{min-height:52px;min-width:96px;padding:0 16px;border-radius:14px;background:var(--primary-soft);color:var(--primary);font-weight:800;flex:none}
+.vbtn:active{transform:scale(.97)}
 .vbtn.alt{background:var(--surface);color:var(--primary);border:2px solid var(--line)}
 .vval{margin:14px 0 4px 62px;display:flex;flex-direction:column;gap:10px}
 .vval .digits{justify-content:flex-start}
@@ -234,6 +239,7 @@ const isCredit = it => it.kind === 'card' && it.type === 'Carta di credito';
 const ALARM = 'Verisure';
 const VSECTIONS = [
   ['allarme', "Codici dell'allarme"],
+  ['parole', 'Parole chiave'],
   ['app', 'App e accesso online'],
   ['centrale', 'Centrale e contratto']
 ];
@@ -257,6 +263,9 @@ const SEED = { example:true,
   alarm:[
     {id:'v1', sec:'allarme', type:'code', label:'Attivazione/Disattivazione', value:'4729'},
     {id:'v2', sec:'allarme', type:'code', label:'Antisequestro', value:'5830'},
+    {id:'p1', sec:'parole', type:'pass', label:'Cliente', value:'Girasole'},
+    {id:'p2', sec:'parole', type:'pass', label:'Verisure', value:'Montagna'},
+    {id:'p3', sec:'parole', type:'pass', label:'Antisequestro', value:'Tramonto'},
     {id:'v3', sec:'app', type:'login', label:'App My Verisure', user:'mario.rossi', value:'Casa-Sicura-21'},
     {id:'v4', sec:'centrale', type:'phone', label:'Numero della centrale', value:'800 000 000'},
     {id:'v5', sec:'centrale', type:'text', label:'Codice Cliente (Nr. Impianto/Contratto)', value:'VS-1234567'}
@@ -298,6 +307,14 @@ if (!D.noSpid){
   /* «Numero di contratto» diventa «Codice Cliente (Nr. Impianto/Contratto)» */
   const v5 = D.alarm.find(v => v.id === 'v5');
   if (v5 && v5.label === 'Numero di contratto'){ v5.label = 'Codice Cliente (Nr. Impianto/Contratto)'; store.set(KEY, D); }
+  /* Sezione «Parole chiave»: cliente, Verisure, antisequestro (aggiunta una volta sola) */
+  if (!D.hasParole){
+    const words = [['p1','Cliente','Girasole'],['p2','Verisure','Montagna'],['p3','Antisequestro','Tramonto']];
+    const at = D.alarm.findIndex(v => v.sec !== 'allarme'); const add = [];
+    words.forEach(([id, label, demo]) => { if (!D.alarm.some(v => v.id === id)) add.push({id, sec:'parole', type:'pass', label, value: D.example ? demo : ''}); });
+    D.alarm.splice(at < 0 ? D.alarm.length : at, 0, ...add);
+    D.hasParole = true; store.set(KEY, D);
+  }
   /* App My Verisure: utente al posto dell'email negli esempi */
   const v3 = D.alarm.find(v => v.id === 'v3');
   if (v3 && D.example && v3.user === 'mario.rossi@email.it'){ v3.user = 'mario.rossi'; store.set(KEY, D); } }
@@ -312,6 +329,7 @@ document.documentElement.dataset.size = prefs.size;
 
 const S = { screen:'home', flipped:null, vopen:null, draft:null, msg:'', dialog:null, ret:'home', q:'' };
 const $app = document.getElementById('app');
+const wrapSlash = s => esc(s).replace(/\//g, '/<wbr>');
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const buzz = () => { try { navigator.vibrate && navigator.vibrate(12); } catch {} };
 const uid = () => Math.random().toString(36).slice(2,10);
@@ -405,7 +423,7 @@ function vrow(v){
   }
   return `<div class="vrow ${open?'open':''}">
     <div class="vhead"><span class="vic">${I[t.icon]}</span>
-      <span class="vlabel"><b>${esc(v.label)}</b>${open ? '' : `<span class="muted">${sub}</span>`}</span>
+      <span class="vlabel"><b>${wrapSlash(v.label)}</b>${open ? '' : `<span class="muted">${sub}</span>`}</span>
       ${t.secret ? `<button class="vbtn ${open?'alt':''}" data-act="vshow" data-id="${v.id}">${open?'Nascondi':'Mostra'}</button>`
                  : `<button class="vbtn alt icon" data-act="vedit" data-id="${v.id}" aria-label="Modifica ${esc(v.label)}">${I.edit}</button>`}
     </div>
@@ -468,7 +486,7 @@ const V = {
     ${D.alarm.length > 6 ? `<input class="input" id="f-q" type="search" value="${esc(S.q)}" placeholder="Cerca un codice…" autocomplete="off" style="margin-top:16px">` : ''}
     ${secs.length ? secs.map(([title, list]) => `<div class="section-t">${title}</div><div class="vlist">${list.map(vrow).join('')}</div>`).join('')
       : `<p class="muted" style="text-align:center;padding:28px 0">${q ? 'Nessun risultato.' : 'Ancora nessuna voce.'}</p>`}
-    <div style="margin-top:24px"><button class="btn btn-primary" data-act="vnew">${I.plus}Aggiungi un codice o una password</button></div>`;
+    <div style="margin-top:24px"><button class="btn btn-primary" data-act="vnew">${I.plus}Aggiungi una voce</button></div>`;
   },
 
   edit: () => {
@@ -501,10 +519,10 @@ const V = {
     : `${field('user', 'Email', d.user, 'type="email" placeholder="nome@email.it"')}${field('pass', 'Password', d.pass)}`}
     <label class="lbl">Colore</label>
     <div class="chips">${Object.entries(COLORS).map(([n,g])=>`<button class="swatch${INK(n)} ${d.color===n?'sel':''}" style="background:${g}" data-act="color" data-v="${n}" aria-label="Colore ${n}">${d.color===n?I.check:''}</button>`).join('')}</div>
-    <div class="msg">${esc(S.msg)}</div>
-    <div class="list" style="gap:12px">
+    ${d.isNew ? '' : `<button class="btn btn-danger" data-act="askDelete" style="margin-top:28px">${I.trash}Elimina</button>`}
+    <div class="savebar">
+      ${S.msg ? `<div class="msg">${esc(S.msg)}</div>` : ''}
       <button class="btn btn-primary" data-act="save">${I.check}Salva</button>
-      ${d.isNew ? '' : `<button class="btn btn-danger" data-act="askDelete">${I.trash}Elimina</button>`}
     </div>`;
   },
 
@@ -524,10 +542,10 @@ const V = {
     <label class="lbl" for="f-value">${{code:'Codice', pass:'Password o parola', login:'Password', phone:'Numero', text:'Testo'}[t]}</label>
     <input class="input ${t==='code'?'code':''}" id="f-value" value="${esc(d.value)}" autocomplete="off" autocapitalize="off" spellcheck="false"
       ${t==='code' ? 'inputmode="numeric" maxlength="10" placeholder="••••"' : t==='phone' ? 'type="tel" inputmode="tel"' : ''}>
-    <div class="msg">${esc(S.msg)}</div>
-    <div class="list" style="gap:12px">
+    ${d.isNew ? '' : `<button class="btn btn-danger" data-act="askDelete" style="margin-top:28px">${I.trash}Elimina</button>`}
+    <div class="savebar">
+      ${S.msg ? `<div class="msg">${esc(S.msg)}</div>` : ''}
       <button class="btn btn-primary" data-act="vsave">${I.check}Salva</button>
-      ${d.isNew ? '' : `<button class="btn btn-danger" data-act="askDelete">${I.trash}Elimina</button>`}
     </div>`;
   }
 };
@@ -654,7 +672,7 @@ render();
 <script>
 /* Aggiornamenti immediati: appena c'è una versione nuova, l'app si ricarica da sola */
 (() => {
-  const APP_VERSION = '20261127133559';
+  const APP_VERSION = '20261127133813';
   const editing = () => !!document.querySelector('.input:not(#f-q)') || !!document.querySelector('.overlay');
   function reloadOnce(v){
     try { if (sessionStorage.getItem('papa-reload') === v) return; sessionStorage.setItem('papa-reload', v); } catch (e) {}
