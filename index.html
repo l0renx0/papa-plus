@@ -259,7 +259,7 @@ const SEED = { example:true,
     {id:'v2', sec:'allarme', type:'code', label:'Antisequestro', value:'5830'},
     {id:'v3', sec:'app', type:'login', label:'App My Verisure', user:'mario.rossi', value:'Casa-Sicura-21'},
     {id:'v4', sec:'centrale', type:'phone', label:'Numero della centrale', value:'800 000 000'},
-    {id:'v5', sec:'centrale', type:'text', label:'Numero di contratto', value:'VS-1234567'}
+    {id:'v5', sec:'centrale', type:'text', label:'Codice Cliente (Nr. Impianto/Contratto)', value:'VS-1234567'}
   ]
 };
 
@@ -295,6 +295,9 @@ if (!D.noSpid){
     if (!v2.value || /^\d+$/.test(v2.value)) v2.type = 'code';
     store.set(KEY, D);
   }
+  /* «Numero di contratto» diventa «Codice Cliente (Nr. Impianto/Contratto)» */
+  const v5 = D.alarm.find(v => v.id === 'v5');
+  if (v5 && v5.label === 'Numero di contratto'){ v5.label = 'Codice Cliente (Nr. Impianto/Contratto)'; store.set(KEY, D); }
   /* App My Verisure: utente al posto dell'email negli esempi */
   const v3 = D.alarm.find(v => v.id === 'v3');
   if (v3 && D.example && v3.user === 'mario.rossi@email.it'){ v3.user = 'mario.rossi'; store.set(KEY, D); } }
@@ -651,7 +654,7 @@ render();
 <script>
 /* Aggiornamenti immediati: appena c'è una versione nuova, l'app si ricarica da sola */
 (() => {
-  const APP_VERSION = '20261127133440';
+  const APP_VERSION = '20261127133559';
   const editing = () => !!document.querySelector('.input:not(#f-q)') || !!document.querySelector('.overlay');
   function reloadOnce(v){
     try { if (sessionStorage.getItem('papa-reload') === v) return; sessionStorage.setItem('papa-reload', v); } catch (e) {}
