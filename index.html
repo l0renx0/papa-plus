@@ -240,7 +240,7 @@ const VSECTIONS = [
 const VTYPES = {
   code:  {label:'Codice numerico', icon:'grid', secret:true},
   pass:  {label:'Password o parola', icon:'key', secret:true},
-  login: {label:'Email e password', icon:'at', secret:true},
+  login: {label:'Utente e password', icon:'person', secret:true},
   phone: {label:'Numero di telefono', icon:'phone', secret:false},
   text:  {label:'Altro', icon:'doc', secret:false}
 };
@@ -256,8 +256,8 @@ const SEED = { example:true,
   ],
   alarm:[
     {id:'v1', sec:'allarme', type:'code', label:'Attivazione/Disattivazione', value:'4729'},
-    {id:'v2', sec:'allarme', type:'pass', label:'Parola d\'ordine per la centrale', value:'Ciliegia'},
-    {id:'v3', sec:'app', type:'login', label:'App My Verisure', user:'mario.rossi@email.it', value:'Casa-Sicura-21'},
+    {id:'v2', sec:'allarme', type:'code', label:'Antisequestro', value:'5830'},
+    {id:'v3', sec:'app', type:'login', label:'App My Verisure', user:'mario.rossi', value:'Casa-Sicura-21'},
     {id:'v4', sec:'centrale', type:'phone', label:'Numero della centrale', value:'800 000 000'},
     {id:'v5', sec:'centrale', type:'text', label:'Numero di contratto', value:'VS-1234567'}
   ]
@@ -286,7 +286,18 @@ if (!D.noSpid){
 }
 /* Allarme: la prima voce ora si chiama «Attivazione/Disattivazione» */
 { const v1 = D.alarm.find(v => v.id === 'v1');
-  if (v1 && v1.label === "Codice per spegnere l'allarme"){ v1.label = 'Attivazione/Disattivazione'; store.set(KEY, D); } }
+  if (v1 && v1.label === "Codice per spegnere l'allarme"){ v1.label = 'Attivazione/Disattivazione'; store.set(KEY, D); }
+  /* La seconda voce ora è il codice «Antisequestro» */
+  const v2 = D.alarm.find(v => v.id === 'v2');
+  if (v2 && v2.label === "Parola d'ordine per la centrale"){
+    v2.label = 'Antisequestro';
+    if (D.example) v2.value = '5830';
+    if (!v2.value || /^\d+$/.test(v2.value)) v2.type = 'code';
+    store.set(KEY, D);
+  }
+  /* App My Verisure: utente al posto dell'email negli esempi */
+  const v3 = D.alarm.find(v => v.id === 'v3');
+  if (v3 && D.example && v3.user === 'mario.rossi@email.it'){ v3.user = 'mario.rossi'; store.set(KEY, D); } }
 /* Nuova voce: codice di sblocco dell'app IO (aggiunta una volta sola, anche sui telefoni che hanno già l'app) */
 if (!D.hasIo){
   if (!D.items.some(i => i.id === 'io1')) D.items.push({id:'io1', kind:'app', name:'App IO', color:'viola', code: DEMO ? '246810' : ''});
@@ -385,7 +396,7 @@ function vrow(v){
   let val = '';
   if (open && t.secret){
     if (v.type === 'code') val = digits(v.value || '', 'Codice');
-    else if (v.type === 'login') val = `<div><div class="vsmall">Email</div><div class="vtext" style="font-size:1.1rem">${esc(v.user)||'—'}</div></div>
+    else if (v.type === 'login') val = `<div><div class="vsmall">Utente</div><div class="vtext" style="font-size:1.1rem">${esc(v.user)||'—'}</div></div>
       <div><div class="vsmall">Password</div><div class="vtext">${esc(v.value)||'—'}</div></div>`;
     else val = `<div class="vtext">${esc(v.value)||'—'}</div>`;
   }
@@ -505,8 +516,8 @@ const V = {
     <div class="chips">${VSECTIONS.map(([k,title])=>`<button class="opt ${d.sec===k?'sel':''}" data-act="vsec" data-v="${k}">${title}</button>`).join('')}</div>
     <label class="lbl">Che cos'è?</label>
     <div class="chips">${Object.entries(VTYPES).map(([k,v])=>`<button class="opt ${t===k?'sel':''}" data-act="vtype" data-v="${k}">${v.label}</button>`).join('')}</div>
-    ${t === 'login' ? `<label class="lbl" for="f-user">Email</label>
-      <input class="input" id="f-user" type="email" value="${esc(d.user)}" autocomplete="off" autocapitalize="off" spellcheck="false">` : ''}
+    ${t === 'login' ? `<label class="lbl" for="f-user">Utente</label>
+      <input class="input" id="f-user" value="${esc(d.user)}" autocomplete="off" autocapitalize="off" spellcheck="false">` : ''}
     <label class="lbl" for="f-value">${{code:'Codice', pass:'Password o parola', login:'Password', phone:'Numero', text:'Testo'}[t]}</label>
     <input class="input ${t==='code'?'code':''}" id="f-value" value="${esc(d.value)}" autocomplete="off" autocapitalize="off" spellcheck="false"
       ${t==='code' ? 'inputmode="numeric" maxlength="10" placeholder="••••"' : t==='phone' ? 'type="tel" inputmode="tel"' : ''}>
@@ -640,7 +651,7 @@ render();
 <script>
 /* Aggiornamenti immediati: appena c'è una versione nuova, l'app si ricarica da sola */
 (() => {
-  const APP_VERSION = '20261127133302';
+  const APP_VERSION = '20261127133440';
   const editing = () => !!document.querySelector('.input:not(#f-q)') || !!document.querySelector('.overlay');
   function reloadOnce(v){
     try { if (sessionStorage.getItem('papa-reload') === v) return; sessionStorage.setItem('papa-reload', v); } catch (e) {}
