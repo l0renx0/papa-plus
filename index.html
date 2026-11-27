@@ -11,6 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-180.png">
+<meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Layout: una colonna stile telefono, carte grandi che si girano al tocco */
 :root{
@@ -33,7 +34,7 @@
   --danger:#ff7676; --danger-soft:#3a1f24; --ok:#5fd68b; --ok-soft:#173226; --warn-soft:#3a321a;
   --shadow:0 2px 10px rgba(0,0,0,.35); color-scheme:dark;
 }
-html{font-size:19px}
+html{font-size:19px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 html[data-size="l"]{font-size:22px}
 html[data-size="xl"]{font-size:25px}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -154,7 +155,7 @@ label.lbl{display:block;font-weight:800;margin:20px 0 8px;font-size:1.05rem}
 .cie-back .edit-pill{min-height:40px;padding:5px 12px;font-size:15px}
 .cie-l{font-weight:800;font-size:15px;letter-spacing:.08em}
 .cie-back .digits,.cie-back .digits.d8{gap:4px}
-.cie-back .digits .digit,.cie-back .digits.d8 .digit{width:calc((100% - 28px)/8);aspect-ratio:auto;height:42px;font-size:25px;border-radius:9px}
+.cie-back .digits .digit,.cie-back .digits.d8 .digit{width:calc((100% - 28px)/8);aspect-ratio:auto;height:42px;font-size:min(25px, calc((100cqw - 28px) / 8 * .75));border-radius:9px}
 .cie-back .empty-code{padding:8px;font-size:16px}
 .savebar{position:sticky;bottom:0;z-index:5;margin-top:24px;padding:16px 0 calc(12px + env(safe-area-inset-bottom,0px));
   background:linear-gradient(to bottom,transparent,var(--bg) 22px)}
@@ -318,6 +319,13 @@ label.lbl{display:block;font-weight:800;margin:20px 0 8px;font-size:1.05rem}
 .vacts .chipbtn{flex:1;justify-content:center}
 .vlabel .muted.plain{white-space:normal;color:var(--text);font-weight:600;font-size:1rem}
 .vcall{margin:12px 0 2px 62px}
+/* Voce dell'allarme: nome su tutta la riga, pulsante sulla riga sotto */
+.vhead{align-items:flex-start}
+.vic{margin-top:2px}
+.vlabel b{overflow-wrap:break-word;hyphens:manual}
+.vline{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:6px;flex-wrap:wrap}
+.vline>.muted{flex:1 1 auto;min-width:0}
+.vline .vbtn{margin-left:auto}
 .vcall .chipbtn{text-decoration:none;width:100%;justify-content:center;min-height:52px;background:var(--s-centrale-bg);color:var(--s-centrale)}
 @media (max-width:380px){.vcall{margin-left:0}}
 .vfoot .muted{font-size:.85rem}
@@ -327,13 +335,53 @@ label.lbl{display:block;font-weight:800;margin:20px 0 8px;font-size:1.05rem}
 .chipbtn svg{width:20px;height:20px}
 .toast{display:flex;align-items:center;gap:8px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
 @media (prefers-reduced-motion: reduce){.flip.on .timer i,.vtimer i{animation:none}}
+/* Cifre che si adattano sempre alla larghezza disponibile (anche con lo zoom di Android) */
+.digits{container-type:inline-size;width:100%}
+.digits{--g:8px;gap:var(--g)}
+.digits.d8{--g:5px}
+.digits .digit,.digits.d8 .digit,.vval .digits .digit,.vval .digits.d8 .digit{
+  width:min(56px, calc((100cqw - (var(--n,6) - 1) * var(--g)) / var(--n,6)));
+  font-size:min(2.2rem, calc((100cqw - (var(--n,6) - 1) * var(--g)) / var(--n,6) * .68))}
+.cie-back .digits.d8{--g:4px}
+.cie-back .digits.d8 .digit{width:calc((100cqw - 28px) / 8);height:42px;aspect-ratio:auto;font-size:min(25px, calc((100cqw - 28px) / 8 * .75))}
+.size-btn{height:auto;min-height:60px}
+/* Carte che si adattano alla larghezza (telefoni stretti o zoom di Android) */
+.flip{container-type:inline-size}
+.flip-inner{aspect-ratio:auto;height:max(63.05cqw, 200px)}
+.tap-short{display:none}
+@container (max-width:330px){
+  .tap-long{display:none} .tap-short{display:inline}
+  .front .chip{display:none}
+  .front{padding:16px}
+}
+.hero>div,.alarm-tile>span[style]{min-width:0}
+.hero h1{overflow-wrap:break-word}
+/* Titoli mai più larghi dello schermo */
+h1{font-size:min(1.6rem,9vw)}
+.brand h1{font-size:min(1.7rem,10vw)}
+.hero h1{font-size:min(1.6rem,8.5vw)}
+.tile>span[style],.alarm-tile>span[style]{min-width:0;overflow-wrap:break-word}
+/* Schermi molto stretti (o zoom di Android alto) */
+@media (max-width:330px){
+  .tile,.alarm-tile{gap:12px;padding:14px}
+  .tile .ic,.alarm-tile .ic{width:44px;height:44px;border-radius:12px}
+  .tile .ic svg,.alarm-tile .ic svg{width:24px;height:24px}
+  .chev svg{width:22px;height:22px}
+  .hero{flex-direction:column;align-items:flex-start;gap:12px}
+  .hero .big-ic{width:48px;height:48px}
+  .logo{width:44px;height:44px}
+  .vic{width:40px;height:40px} .vic svg{width:22px;height:22px}
+  .vhead{gap:10px}
+  .vcall{margin-left:0}
+  .tagline{display:none}
+}
 /* Le carte hanno misure fisse: restano ordinate anche con il testo «Enorme» */
 .front .f-type{font-size:min(.8rem,14px)}
-.front .f-name{font-size:min(1.5rem,27px)}
+.front .f-name{font-size:min(1.5rem,27px,10cqw)}
 .front .f-tap{font-size:min(.85rem,15px);white-space:nowrap}
 .rear .b-label{font-size:min(.95rem,17px)}
 .rear .edit-pill{font-size:min(.85rem,15px)}
-.rear .digit{font-size:min(2.2rem,38px)}
+.rear .digit{font-size:min(2.2rem,38px,calc((100cqw - 40px) / 6 * .7))}
 .rear .cred small{font-size:min(.72rem,12px)} .rear .cred b{font-size:min(1.1rem,19px)}
 .rear .empty-code{font-size:min(1rem,17px)}
 </style>
@@ -480,7 +528,7 @@ const buzz = () => { try { navigator.vibrate && navigator.vibrate(12); } catch {
 const uid = () => Math.random().toString(36).slice(2,10);
 const byId = id => D.items.find(i => i.id === id);
 const vById = id => D.alarm.find(i => i.id === id);
-const digits = (code, label) => `<div class="digits${code.length > 6 ? ' d8' : ''}" aria-label="${label} ${esc(code.split('').join(' '))}">${code.split('').map(d=>`<span class="digit">${esc(d)}</span>`).join('')}</div>`;
+const digits = (code, label) => `<div class="digits${code.length > 6 ? ' d8' : ''}" style="--n:${Math.max(code.length, 4)}" aria-label="${label} ${esc(code.split('').join(' '))}">${code.split('').map(d=>`<span class="digit">${esc(d)}</span>`).join('')}</div>`;
 function toast(t){ const el = document.createElement('div'); el.className='toast'; el.textContent=t; document.body.appendChild(el); setTimeout(()=>el.remove(),2200); }
 
 /* ---------- Carte che si girano ---------- */
@@ -493,7 +541,7 @@ function front(it){
   const empty = it.kind === 'cie' ? !(it.pin || it.puk) : isCredit(it) ? !(it.nexiPass || it.question || it.answer || it.key6)
               : it.kind === 'login' ? !(it.user || it.pass) : !it.code;
   const tap = empty ? `<span class="f-tap todo">${I.plus}${it.kind === 'cie' || isCredit(it) ? 'Codici da inserire' : 'Codice da inserire'}</span>`
-                    : `<span class="f-tap">${I.hand}Tocca per vedere ${what}</span>`;
+                    : `<span class="f-tap">${I.hand}<span class="tap-long">Tocca per vedere ${what}</span><span class="tap-short">Tocca qui</span></span>`;
   return `<div class="face front${INK(it.color)}" style="background:${bg}">
       <div class="f-row"><span class="f-type">${esc(type)}</span><span class="f-ic">${I[icon]}</span></div>
       ${chip}
@@ -573,8 +621,9 @@ function vrow(v){
   const copy = open && v.value && v.type !== 'code' ? `<button class="chipbtn" data-act="copy" data-id="${v.id}">${I.copy}Copia</button>` : '';
   return `<div class="vrow ${open?'open':''}">
     <div class="vhead"><span class="vic s-${v.sec}">${I[t.icon]}</span>
-      <span class="vlabel"><b>${wrapSlash(v.label)}</b>${open ? '' : `<span class="muted${t.secret && !empty ? '' : ' plain'}">${sub}</span>`}</span>
-      ${btns}
+      <div class="vlabel"><b>${wrapSlash(v.label)}</b>
+        ${btns || !open ? `<div class="vline">${open ? '<span></span>' : `<span class="muted${t.secret && !empty ? '' : ' plain'}">${sub}</span>`}${btns}</div>` : ''}
+      </div>
     </div>
     ${call ? `<div class="vcall">${call}</div>` : ''}
     ${empty ? `<div class="vcall"><button class="chipbtn addfull" data-act="vedit" data-id="${v.id}">${I.plus}Inserisci</button></div>` : ''}
@@ -836,7 +885,7 @@ render();
 <script>
 /* Aggiornamenti immediati: appena c'è una versione nuova, l'app si ricarica da sola */
 (() => {
-  const APP_VERSION = '20261127135553';
+  const APP_VERSION = '20261127141053';
   const editing = () => !!document.querySelector('.input:not(#f-q)') || !!document.querySelector('.overlay');
   function reloadOnce(v){
     try { if (sessionStorage.getItem('papa-reload') === v) return; sessionStorage.setItem('papa-reload', v); } catch (e) {}
