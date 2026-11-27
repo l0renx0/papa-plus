@@ -148,6 +148,14 @@ label.lbl{display:block;font-weight:800;margin:20px 0 8px;font-size:1.05rem}
 .digits.d8{gap:5px}
 .digits.d8 .digit{width:calc((100% - 35px)/8);font-size:1.7rem;border-radius:9px}
 .xnote{font-size:.9rem;color:var(--muted);padding:10px 0 12px}
+.cie-back .back-body{padding:10px 14px 12px;gap:4px;justify-content:center}
+.cie-back .back-body>*{flex:none}
+.cie-back .b-row{min-height:34px}
+.cie-back .edit-pill{min-height:34px;padding:5px 12px;font-size:15px}
+.cie-l{font-weight:800;font-size:15px;letter-spacing:.08em}
+.cie-back .digits,.cie-back .digits.d8{gap:4px}
+.cie-back .digits .digit,.cie-back .digits.d8 .digit{width:calc((100% - 28px)/8);aspect-ratio:auto;height:44px;font-size:26px;border-radius:9px}
+.cie-back .empty-code{padding:8px;font-size:16px}
 .xpanel{background:var(--surface);border-radius:18px;box-shadow:var(--shadow);padding:6px 16px;margin-top:12px;text-align:left}
 .xrow{padding:12px 0;border-bottom:1px solid var(--line)}
 .xrow:last-child{border-bottom:0}
@@ -207,6 +215,7 @@ const I = {
   info: sv('<circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5v.01"/>'),
   grid: sv('<rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M8 8h.01M12 8h.01M16 8h.01M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/>', 2.6),
   key: sv('<circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3L20 3M16 7l3 3M14 9l2 2"/>'),
+  mobile: sv('<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18.5h2"/>'),
   phone: sv('<path d="M5 3.5h3.5l1.8 4.5-2.3 1.4a11 11 0 0 0 6.6 6.6l1.4-2.3 4.5 1.8V19a2 2 0 0 1-2 2A17.5 17.5 0 0 1 3 5.5a2 2 0 0 1 2-2z"/>'),
   doc: sv('<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>'),
   at: sv('<circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/>')
@@ -242,7 +251,8 @@ const SEED = { example:true,
     {id:'b1', kind:'card', name:'Bancomat', type:'Bancomat', color:'blu', code:'58204'},
     {id:'c1', kind:'card', name:'Carta di credito', type:'Carta di credito', color:'nero',
       nexiPass:'Mare-Blu-58', question:'Come si chiamava il tuo primo cane?', answer:'Fido', key6:'418273'},
-    {id:'i1', kind:'cie', name:"Carta d'identità", color:'azzurro', pin:'12345678', puk:'87654321', number:'CA12345AB'}
+    {id:'i1', kind:'cie', name:"Carta d'identità", color:'azzurro', pin:'12345678', puk:'87654321', number:'CA12345AB'},
+    {id:'io1', kind:'app', name:'App IO', color:'viola', code:'246810'}
   ],
   alarm:[
     {id:'v1', sec:'allarme', type:'code', label:"Codice per spegnere l'allarme", value:'4729'},
@@ -274,6 +284,11 @@ if (!D.noSpid){
   if (sp && (D.example || !(sp.user || sp.pass))) D.items = D.items.filter(i => i !== sp);
   D.noSpid = true; store.set(KEY, D);
 }
+/* Nuova voce: codice di sblocco dell'app IO (aggiunta una volta sola, anche sui telefoni che hanno già l'app) */
+if (!D.hasIo){
+  if (!D.items.some(i => i.id === 'io1')) D.items.push({id:'io1', kind:'app', name:'App IO', color:'viola', code: DEMO ? '246810' : ''});
+  D.hasIo = true; store.set(KEY, D);
+}
 const save = () => store.set(KEY, D);
 const prefs = Object.assign({size:'m'}, store.get(PREF) || {});
 document.documentElement.dataset.size = prefs.size;
@@ -295,6 +310,9 @@ function front(it){
       <div class="f-row"><span class="f-type">${esc(it.type)}</span><span class="hint">${I.flip}Tocca per ${isCredit(it)?'i codici':'il codice'}</span></div>
       <div class="f-name">${esc(it.name)}</div>
       <div class="f-row"><span class="chip"></span></div></div>`;
+  if (it.kind === 'app') return `<div class="face front${INK(it.color)}" style="background:${bg}">
+      <div class="f-row"><span class="big-ic">${I.mobile}</span><span class="hint">${I.flip}Tocca per il codice</span></div>
+      <div><div class="f-type">Codice di sblocco</div><div class="f-name">${esc(it.name)}</div></div></div>`;
   if (it.kind === 'cie') return `<div class="face front" style="background:${bg}">
       <div class="f-row"><span class="f-type">CIE</span><span class="hint">${I.flip}Tocca per i codici</span></div>
       <div class="f-name">${esc(it.name)}</div>
@@ -311,16 +329,24 @@ function back(it){
     body = `<div class="cred"><small>Email</small><b>${esc(it.user) || '—'}</b></div>
             <div class="cred"><small>Password</small><b>${esc(it.pass) || '—'}</b></div>`;
   } else if (it.kind === 'cie'){
-    label = 'PIN (8 numeri)';
-    body = it.pin ? digits(it.pin, 'PIN') : `<div class="empty-code">PIN non inserito</div>`;
+    const row = (name, code) => code ? digits(code, name) : `<div class="empty-code">${name} non inserito</div>`;
+    return `<div class="face rear cie-back" style="background:${bg}">
+      <div class="back-body">
+        <div class="b-row"><span class="cie-l">PIN</span>
+          <button class="edit-pill" data-act="edit" data-id="${it.id}">${I.edit}Modifica</button></div>
+        ${row('PIN', it.pin)}
+        <div class="cie-l" style="margin-top:4px">PUK</div>
+        ${row('PUK', it.puk)}
+      </div></div>`;
   } else if (isCredit(it)){
     label = 'Codice Nexi Key6';
     body = it.key6 ? digits(it.key6, 'Codice Key6') : `<div class="empty-code">Codice Key6 non inserito</div>`;
   } else {
+    if (it.kind === 'app') label = 'Codice di sblocco';
     body = it.code ? digits(it.code, 'Codice') : `<div class="empty-code">Nessun codice. Tocca «Modifica».</div>`;
   }
   return `<div class="face rear${INK(it.color)}" style="background:${bg}">
-      ${it.kind!=='login' ? '<div class="stripe"></div>' : ''}
+      ${it.kind==='card' ? '<div class="stripe"></div>' : ''}
       <div class="back-body">
         <div class="b-row"><span class="b-label">${label}</span>
           <button class="edit-pill" data-act="edit" data-id="${it.id}">${I.edit}Modifica</button></div>
@@ -334,7 +360,6 @@ function under(it, on){
       <div class="xrow"><small>Domanda di sicurezza</small><span>${esc(it.question) || '—'}</span>
         <small>Risposta</small><b>${esc(it.answer) || '—'}</b></div></div>` : '';
   const cie = it.kind === 'cie' ? `<div class="xpanel">
-      <div class="xrow"><small>PUK (8 numeri)</small><b>${esc(it.puk) || '—'}</b></div>
       <div class="xrow"><small>Numero della carta</small><b>${esc(it.number) || '—'}</b></div>
       <div class="xnote">Il PIN serve per entrare con la carta d'identità (app CieID). Il PUK serve a sbloccare il PIN se si blocca.</div></div>` : '';
   return extra + cie + `<div class="under">Tocca di nuovo la carta per <b>nascondere</b></div>`;
@@ -399,6 +424,7 @@ const V = {
       ${opt('newBancomat', 'blu', 'card', 'Bancomat', 'Il codice del bancomat')}
       ${opt('newCredit', 'nero', 'card', 'Carta di credito', 'Password Nexi, domanda di sicurezza, Key6')}
       ${opt('newCie', 'azzurro', 'idcard', "Carta d'identità elettronica", 'PIN, PUK e numero della carta')}
+      ${opt('newApp', 'viola', 'mobile', "App IO o altra app", 'Il codice per sbloccare l\'app')}
       ${opt('newLogin', 'postale', 'person', 'SPID o altra password', 'Email e password')}
     </div>`;
   },
@@ -434,7 +460,7 @@ const V = {
       <input class="input" id="f-${id}" value="${esc(val)}" autocomplete="off" autocapitalize="off" spellcheck="false" ${extra}>`;
     return `
     <div class="top"><button class="back" data-act="ret">${I.back}Indietro</button></div>
-    <h1>${d.isNew ? ({card:'Nuova carta', cie:"Carta d'identità", login:'Nuova password'})[d.kind] : 'Modifica'}</h1>
+    <h1>${d.isNew ? ({card:'Nuova carta', cie:"Carta d'identità", login:'Nuova password', app:'Codice di un\'app'})[d.kind] : 'Modifica'}</h1>
     ${field('name', 'Nome', d.name, `maxlength="30" autocapitalize="sentences" placeholder="${card?'Es. Bancomat':d.kind==='cie'?"Es. Carta d'identità":'Es. SPID'}"`)}
     ${card ? `<label class="lbl">Tipo di carta</label>
       <div class="chips">${CARD_TYPES.map(t=>`<button class="opt ${d.type===t?'sel':''}" data-act="type" data-v="${t}">${t}</button>`).join('')}</div>` : ''}
@@ -451,6 +477,8 @@ const V = {
       <label class="lbl" for="f-puk">PUK <span class="muted" style="font-weight:600">(8 numeri)</span></label>
       <input class="input code" id="f-puk" value="${esc(d.puk)}" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="••••••••" style="letter-spacing:.2em">
       ${field('number', 'Numero della carta <span class="muted" style="font-weight:600">(facoltativo)</span>', d.number, 'autocapitalize="characters" placeholder="Es. CA12345AB" maxlength="12"')}`
+    : d.kind === 'app' ? `<label class="lbl" for="f-code">Codice di sblocco</label>
+      <input class="input code" id="f-code" value="${esc(d.code)}" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="••••••">`
     : card ? `<label class="lbl" for="f-code">Codice${d.type==='Bancomat'?' del bancomat':''}</label>
       <input class="input code" id="f-code" value="${esc(d.code)}" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="•••••">`
     : `${field('user', 'Email', d.user, 'type="email" placeholder="nome@email.it"')}${field('pass', 'Password', d.pass)}`}
@@ -540,6 +568,7 @@ const A = {
   newCard: () => go('edit', {ret:'home', draft:{isNew:true, id:uid(), kind:'card', name:'', type:'Bancomat', color:'blu', code:''}}),
   newBancomat: () => go('edit', {ret:'home', draft:{isNew:true, id:uid(), kind:'card', name:'Bancomat', type:'Bancomat', color:'blu', code:''}}),
   newCredit: () => go('edit', {ret:'home', draft:{isNew:true, id:uid(), kind:'card', name:'Carta di credito', type:'Carta di credito', color:'nero', nexiPass:'', question:'', answer:'', key6:''}}),
+  newApp: () => go('edit', {ret:'home', draft:{isNew:true, id:uid(), kind:'app', name:'App IO', color:'viola', code:''}}),
   newCie: () => go('edit', {ret:'home', draft:{isNew:true, id:uid(), kind:'cie', name:"Carta d'identità", color:'azzurro', pin:'', puk:'', number:''}}),
   newLogin: () => go('edit', {ret:here(), draft:{isNew:true, id:uid(), kind:'login', name:'SPID', color:'postale', user:'', pass:''}}),
   edit: el => go('edit', {ret:here(), draft:{...byId(el.dataset.id)}}),
@@ -556,7 +585,7 @@ const A = {
     } else if (isCredit(d)){
       if (!(d.nexiPass || d.question || d.answer || d.key6)) return fail('Scrivi almeno uno dei codici.');
       if (d.key6 && d.key6.length !== 6) return fail('Il codice Key6 deve avere 6 numeri.');
-    } else if (d.kind === 'card' && d.code.length < 4) return fail('Il codice deve avere almeno 4 numeri.');
+    } else if ((d.kind === 'card' || d.kind === 'app') && d.code.length < 4) return fail('Il codice deve avere almeno 4 numeri.');
     const {isNew, ...item} = d;
     if (isNew) D.items.push(item); else D.items = D.items.map(i => i.id === item.id ? item : i);
     save(); go(S.ret); toast('Salvato ✓');
@@ -608,7 +637,7 @@ render();
 <script>
 /* Aggiornamenti immediati: appena c'è una versione nuova, l'app si ricarica da sola */
 (() => {
-  const APP_VERSION = '20261127132556';
+  const APP_VERSION = '20261127132938';
   const editing = () => !!document.querySelector('.input:not(#f-q)') || !!document.querySelector('.overlay');
   function reloadOnce(v){
     try { if (sessionStorage.getItem('papa-reload') === v) return; sessionStorage.setItem('papa-reload', v); } catch (e) {}
