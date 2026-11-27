@@ -150,11 +150,11 @@ label.lbl{display:block;font-weight:800;margin:20px 0 8px;font-size:1.05rem}
 .xnote{font-size:.9rem;color:var(--muted);padding:10px 0 12px}
 .cie-back .back-body{padding:10px 14px 12px;gap:4px;justify-content:center}
 .cie-back .back-body>*{flex:none}
-.cie-back .b-row{min-height:34px}
-.cie-back .edit-pill{min-height:34px;padding:5px 12px;font-size:15px}
+.cie-back .b-row{min-height:40px}
+.cie-back .edit-pill{min-height:40px;padding:5px 12px;font-size:15px}
 .cie-l{font-weight:800;font-size:15px;letter-spacing:.08em}
 .cie-back .digits,.cie-back .digits.d8{gap:4px}
-.cie-back .digits .digit,.cie-back .digits.d8 .digit{width:calc((100% - 28px)/8);aspect-ratio:auto;height:44px;font-size:26px;border-radius:9px}
+.cie-back .digits .digit,.cie-back .digits.d8 .digit{width:calc((100% - 28px)/8);aspect-ratio:auto;height:42px;font-size:25px;border-radius:9px}
 .cie-back .empty-code{padding:8px;font-size:16px}
 .savebar{position:sticky;bottom:0;z-index:5;margin-top:24px;padding:16px 0 calc(12px + env(safe-area-inset-bottom,0px));
   background:linear-gradient(to bottom,transparent,var(--bg) 22px)}
@@ -180,7 +180,7 @@ label.lbl{display:block;font-weight:800;margin:20px 0 8px;font-size:1.05rem}
 .vic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:var(--ok-soft);color:var(--ok);flex:none}
 .vic svg{width:26px;height:26px}
 .vlabel{flex:1;min-width:0}
-.vlabel b{display:block;font-size:1.08rem;line-height:1.25;overflow-wrap:anywhere}
+.vlabel b{display:block;font-size:1.08rem;line-height:1.25;overflow-wrap:normal;word-break:normal}
 .vlabel .muted{font-size:.9rem;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vbtn svg{width:24px;height:24px;display:block;margin:auto}
 .vbtn.icon{min-width:56px;padding:0}
@@ -196,6 +196,146 @@ label.lbl{display:block;font-weight:800;margin:20px 0 8px;font-size:1.05rem}
 .linkbtn{color:var(--primary);font-weight:800;min-height:44px;display:inline-flex;align-items:center;gap:6px}
 .linkbtn svg{width:20px;height:20px}
 @media (max-width:380px){.vval{margin-left:0}}
+
+/* ===== Rifinitura grafica ===== */
+:root{
+  --s-allarme:#14713f; --s-allarme-bg:#e1f4e8;
+  --s-parole:#9a5a00; --s-parole-bg:#fff0d4;
+  --s-app:#5d35c4; --s-app-bg:#ede6ff;
+  --s-centrale:#1f4fd1; --s-centrale-bg:#e4ebff;
+  --card-shadow:0 14px 28px -12px rgba(15,23,41,.45), 0 2px 6px rgba(15,23,41,.12);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --s-allarme:#6fdc9a; --s-allarme-bg:#16301f; --s-parole:#ffc561; --s-parole-bg:#36290f;
+    --s-app:#b7a0ff; --s-app-bg:#2a2147; --s-centrale:#8fabff; --s-centrale-bg:#1f2a47;
+    --card-shadow:0 14px 28px -12px rgba(0,0,0,.8), 0 2px 6px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --s-allarme:#6fdc9a; --s-allarme-bg:#16301f; --s-parole:#ffc561; --s-parole-bg:#36290f;
+  --s-app:#b7a0ff; --s-app-bg:#2a2147; --s-centrale:#8fabff; --s-centrale-bg:#1f2a47;
+  --card-shadow:0 14px 28px -12px rgba(0,0,0,.8), 0 2px 6px rgba(0,0,0,.4);
+}
+
+/* Intestazione */
+.home-top{margin-bottom:10px}
+.brand{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+.logo{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;color:#fff;flex:none;
+  background:linear-gradient(135deg,#1f4fd1,#3a7bfd);box-shadow:0 6px 14px -6px rgba(31,79,209,.7)}
+.logo svg{width:30px;height:30px}
+.brand h1{font-size:1.7rem;letter-spacing:-.01em}
+.plus{color:var(--primary)}
+.tagline{color:var(--muted);font-size:.9rem;font-weight:600;margin-top:1px}
+.size-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;min-width:64px;height:60px;
+  padding:4px 10px!important;border-radius:16px;background:var(--surface);box-shadow:var(--shadow);font-weight:800;line-height:1}
+.size-btn span{font-size:1.15rem}
+.size-btn small{font-size:.7rem;font-weight:800;color:var(--muted);margin-top:4px;letter-spacing:.03em}
+.lead{display:flex;align-items:center;gap:8px}
+.lead svg{width:22px;height:22px;flex:none;color:var(--primary)}
+
+/* Carte: davanti */
+.face{box-shadow:var(--card-shadow)}
+.front{padding:18px 20px 18px}
+.front::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 80% at 0% 100%,rgba(255,255,255,.10),transparent 60%),
+             repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 2px,transparent 2px 12px)}
+.f-type{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.f-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.18);flex:none}
+.f-ic svg{width:24px;height:24px}
+.face.ink .f-ic{background:rgba(16,32,74,.12)}
+.f-name{font-size:1.5rem;letter-spacing:-.01em}
+.f-tap{display:inline-flex;align-items:center;gap:7px;margin-top:8px;font-size:.85rem;font-weight:800;
+  background:rgba(255,255,255,.22);padding:7px 12px 7px 10px;border-radius:999px}
+.f-tap svg{width:18px;height:18px}
+.face.ink .f-tap{background:rgba(16,32,74,.12)}
+.f-tap.todo{background:rgba(255,255,255,.95);color:#10204a}
+.chip{width:44px;height:33px;border-radius:7px;position:relative;
+  background:linear-gradient(135deg,#f6dd92,#c9a54a);box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.chip::after{content:"";position:absolute;inset:7px 9px;border:1.5px solid rgba(110,80,20,.35);border-radius:4px}
+.flip:active .flip-inner{transform:scale(.985)}
+.flip.on:active .flip-inner{transform:rotateY(180deg) scale(.985)}
+
+/* Carte: dietro, con barra del tempo */
+.timer{position:absolute;left:0;right:0;bottom:0;height:6px;background:rgba(255,255,255,.16)}
+.timer i{display:block;height:100%;background:rgba(255,255,255,.9);transform-origin:left center}
+.face.ink .timer{background:rgba(16,32,74,.12)} .face.ink .timer i{background:#10204a}
+.flip.on .timer i{animation:countdown 30s linear forwards}
+@keyframes countdown{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+.under{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px}
+
+/* Riquadro allarme in prima pagina */
+.alarm-tile{display:flex;align-items:center;gap:16px;width:100%;text-align:left;padding:20px;border-radius:22px;color:#fff;
+  background:linear-gradient(135deg,#0e6844,#1fa673);box-shadow:var(--card-shadow);position:relative;overflow:hidden}
+.alarm-tile::after{pointer-events:none;content:"";position:absolute;right:-50px;bottom:-70px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.1)}
+.alarm-tile .ic{width:58px;height:58px;border-radius:16px;display:grid;place-items:center;background:rgba(255,255,255,.2);flex:none}
+.alarm-tile .ic svg{width:32px;height:32px}
+.alarm-tile b{font-size:1.2rem;display:block}
+.alarm-tile small{display:block;opacity:.92;font-size:.92rem;font-weight:600;margin-top:2px}
+.alarm-tile .chev{color:#fff;position:relative;z-index:1}
+.alarm-tile:active{transform:scale(.985)}
+
+/* Pagina allarme */
+.hero{position:relative;overflow:hidden;padding:22px 20px;box-shadow:var(--card-shadow)}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.1)}
+.hero>*{position:relative;z-index:1}
+.hero .big-ic{width:60px;height:60px;border-radius:18px}
+.hero .big-ic svg{width:34px;height:34px}
+.hero p{margin-top:2px}
+.jump{display:flex;flex-wrap:wrap;gap:8px;padding-top:14px}
+.jump::-webkit-scrollbar{display:none}
+.jump-b{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:46px;padding:0 14px;border-radius:999px;
+  background:var(--surface);box-shadow:var(--shadow);font-weight:800;font-size:.92rem;white-space:nowrap}
+.jump-b svg{width:18px;height:18px}
+.search{position:relative;margin-top:12px}
+.search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:24px;height:24px;color:var(--muted);pointer-events:none}
+.search .input{padding-left:52px}
+.vsec{scroll-margin-top:12px}
+.vsec-h{display:flex;align-items:center;gap:10px;text-transform:none;letter-spacing:0;font-size:1.05rem;color:var(--text);margin:28px 0 12px}
+.vsec-ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none}
+.vsec-ic svg{width:20px;height:20px}
+.vsec-h .count{margin-left:auto;font-size:.85rem;font-weight:800;color:var(--muted);background:var(--surface);
+  border-radius:999px;padding:4px 10px;box-shadow:var(--shadow)}
+.s-allarme{color:var(--s-allarme);background:var(--s-allarme-bg)}
+.s-parole{color:var(--s-parole);background:var(--s-parole-bg)}
+.s-app{color:var(--s-app);background:var(--s-app-bg)}
+.s-centrale{color:var(--s-centrale);background:var(--s-centrale-bg)}
+.vrow{padding:14px 14px 14px 14px;transition:background .2s}
+.vrow.open{background:var(--primary-soft)}
+.vlabel .muted .empty{font-style:italic;color:var(--muted);font-weight:600}
+.vcall .addfull{width:100%;justify-content:center;min-height:52px;background:transparent;border:2px dashed var(--line);color:var(--primary)}
+.vbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;min-width:0;padding:0 14px}
+.vbtn svg{width:22px;height:22px;margin:0}
+.vbtn.add{background:transparent;border:2px dashed var(--line);color:var(--primary)}
+.vbtns{display:flex;gap:8px;flex:none}
+.vval{margin:14px 0 2px;padding:14px;background:var(--surface);border-radius:16px;box-shadow:var(--shadow)}
+.vval .digit{background:var(--primary-soft);box-shadow:none;width:min(56px,calc((100% - 40px)/6));font-size:2.1rem}
+.vval .digits.d8 .digit{width:calc((100% - 35px)/8);font-size:1.6rem}
+.vtext{background:var(--bg);font-size:1.35rem}
+.vtimer{height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+.vtimer i{display:block;height:100%;background:var(--primary);transform-origin:left center;animation:countdown 30s linear forwards}
+.vfoot{gap:10px;flex-direction:column;align-items:stretch}
+.vacts .chipbtn{flex:1;justify-content:center}
+.vlabel .muted.plain{white-space:normal;color:var(--text);font-weight:600;font-size:1rem}
+.vcall{margin:12px 0 2px 62px}
+.vcall .chipbtn{text-decoration:none;width:100%;justify-content:center;min-height:52px;background:var(--s-centrale-bg);color:var(--s-centrale)}
+@media (max-width:380px){.vcall{margin-left:0}}
+.vfoot .muted{font-size:.85rem}
+.vacts{display:flex;gap:8px;flex-wrap:wrap}
+.chipbtn{display:inline-flex;align-items:center;gap:6px;min-height:46px;padding:0 14px;border-radius:12px;font-weight:800;
+  background:var(--primary-soft);color:var(--primary)}
+.chipbtn svg{width:20px;height:20px}
+.toast{display:flex;align-items:center;gap:8px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+@media (prefers-reduced-motion: reduce){.flip.on .timer i,.vtimer i{animation:none}}
+/* Le carte hanno misure fisse: restano ordinate anche con il testo «Enorme» */
+.front .f-type{font-size:min(.8rem,14px)}
+.front .f-name{font-size:min(1.5rem,27px)}
+.front .f-tap{font-size:min(.85rem,15px);white-space:nowrap}
+.rear .b-label{font-size:min(.95rem,17px)}
+.rear .edit-pill{font-size:min(.85rem,15px)}
+.rear .digit{font-size:min(2.2rem,38px)}
+.rear .cred small{font-size:min(.72rem,12px)} .rear .cred b{font-size:min(1.1rem,19px)}
+.rear .empty-code{font-size:min(1rem,17px)}
 </style>
 
 </head>
@@ -223,6 +363,11 @@ const I = {
   mobile: sv('<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18.5h2"/>'),
   phone: sv('<path d="M5 3.5h3.5l1.8 4.5-2.3 1.4a11 11 0 0 0 6.6 6.6l1.4-2.3 4.5 1.8V19a2 2 0 0 1-2 2A17.5 17.5 0 0 1 3 5.5a2 2 0 0 1 2-2z"/>'),
   doc: sv('<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>'),
+  eye: sv('<path d="M1.5 12S5.5 4.5 12 4.5 22.5 12 22.5 12 18.5 19.5 12 19.5 1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3.2"/>'),
+  eyeoff: sv('<path d="M3 3l18 18M10.6 5.1A10 10 0 0 1 12 4.5c6.5 0 10.5 7.5 10.5 7.5a17 17 0 0 1-3.2 4M6.6 6.6A17 17 0 0 0 1.5 12S5.5 19.5 12 19.5a10 10 0 0 0 5.4-1.6M9.9 9.9a3.2 3.2 0 0 0 4.2 4.2"/>'),
+  copy: sv('<rect x="8.5" y="8.5" width="12" height="12" rx="2.5"/><path d="M15.5 8.5V5.5a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h3"/>'),
+  search: sv('<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/>', 2.4),
+  hand: sv('<path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11M12 10.5V4a1.5 1.5 0 0 1 3 0v7M15 10.5V6a1.5 1.5 0 0 1 3 0v8a7 7 0 0 1-7 7h-.5a6 6 0 0 1-4.8-2.4l-3-4a1.6 1.6 0 0 1 2.5-2L9 16V11"/>'),
   at: sv('<circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/>')
 };
 const COLORS = {
@@ -238,10 +383,10 @@ const isCredit = it => it.kind === 'card' && it.type === 'Carta di credito';
 /* Allarme: sezioni e tipi di voce */
 const ALARM = 'Verisure';
 const VSECTIONS = [
-  ['allarme', "Codici dell'allarme"],
-  ['parole', 'Parole chiave'],
-  ['app', 'App e accesso online'],
-  ['centrale', 'Centrale e contratto']
+  ['allarme', "Codici dell'allarme", 'grid', 'Codici'],
+  ['parole', 'Parole chiave', 'key', 'Parole chiave'],
+  ['app', 'App e accesso online', 'mobile', 'App'],
+  ['centrale', 'Centrale e contratto', 'phone', 'Centrale']
 ];
 const VTYPES = {
   code:  {label:'Codice numerico', icon:'grid', secret:true},
@@ -341,20 +486,18 @@ function toast(t){ const el = document.createElement('div'); el.className='toast
 /* ---------- Carte che si girano ---------- */
 function front(it){
   const bg = COLORS[it.color] || COLORS.blu;
-  if (it.kind === 'card') return `<div class="face front${INK(it.color)}" style="background:${bg}">
-      <div class="f-row"><span class="f-type">${esc(it.type)}</span><span class="hint">${I.flip}Tocca per ${isCredit(it)?'i codici':'il codice'}</span></div>
-      <div class="f-name">${esc(it.name)}</div>
-      <div class="f-row"><span class="chip"></span></div></div>`;
-  if (it.kind === 'app') return `<div class="face front${INK(it.color)}" style="background:${bg}">
-      <div class="f-row"><span class="big-ic">${I.mobile}</span><span class="hint">${I.flip}Tocca per il codice</span></div>
-      <div><div class="f-type">Codice di sblocco</div><div class="f-name">${esc(it.name)}</div></div></div>`;
-  if (it.kind === 'cie') return `<div class="face front" style="background:${bg}">
-      <div class="f-row"><span class="f-type">CIE</span><span class="hint">${I.flip}Tocca per i codici</span></div>
-      <div class="f-name">${esc(it.name)}</div>
-      <div class="f-row"><span class="big-ic">${I.idcard}</span><span class="chip"></span></div></div>`;
+  const type = it.kind === 'card' ? it.type : it.kind === 'cie' ? "Carta d'identità elettronica" : it.kind === 'app' ? 'Codice di sblocco' : 'Email e password';
+  const icon = it.kind === 'cie' ? 'idcard' : it.kind === 'app' ? 'mobile' : it.kind === 'login' ? 'person' : 'card';
+  const what = (isCredit(it) || it.kind === 'cie') ? 'i codici' : it.kind === 'login' ? 'email e password' : 'il codice';
+  const chip = (it.kind === 'card' || it.kind === 'cie') ? '<span class="chip"></span>' : '<span></span>';
+  const empty = it.kind === 'cie' ? !(it.pin || it.puk) : isCredit(it) ? !(it.nexiPass || it.question || it.answer || it.key6)
+              : it.kind === 'login' ? !(it.user || it.pass) : !it.code;
+  const tap = empty ? `<span class="f-tap todo">${I.plus}${it.kind === 'cie' || isCredit(it) ? 'Codici da inserire' : 'Codice da inserire'}</span>`
+                    : `<span class="f-tap">${I.hand}Tocca per vedere ${what}</span>`;
   return `<div class="face front${INK(it.color)}" style="background:${bg}">
-      <div class="f-row"><span class="big-ic">${I.person}</span><span class="hint">${I.flip}Tocca per vedere</span></div>
-      <div><div class="f-type">Email e password</div><div class="f-name">${esc(it.name)}</div></div></div>`;
+      <div class="f-row"><span class="f-type">${esc(type)}</span><span class="f-ic">${I[icon]}</span></div>
+      ${chip}
+      <div><div class="f-name">${esc(it.name)}</div>${tap}</div></div>`;
 }
 function back(it){
   const bg = COLORS[it.color] || COLORS.blu;
@@ -372,13 +515,13 @@ function back(it){
         ${row('PIN', it.pin)}
         <div class="cie-l" style="margin-top:4px">PUK</div>
         ${row('PUK', it.puk)}
-      </div></div>`;
+      </div><div class="timer"><i></i></div></div>`;
   } else if (isCredit(it)){
     label = 'Codice Nexi Key6';
     body = it.key6 ? digits(it.key6, 'Codice Key6') : `<div class="empty-code">Codice Key6 non inserito</div>`;
   } else {
     if (it.kind === 'app') label = 'Codice di sblocco';
-    body = it.code ? digits(it.code, 'Codice') : `<div class="empty-code">Nessun codice. Tocca «Modifica».</div>`;
+    body = it.code ? digits(it.code, 'Codice') : `<div class="empty-code">Nessun codice salvato.<br>Tocca «Modifica» qui sopra.</div>`;
   }
   return `<div class="face rear${INK(it.color)}" style="background:${bg}">
       ${it.kind==='card' ? '<div class="stripe"></div>' : ''}
@@ -386,7 +529,7 @@ function back(it){
         <div class="b-row"><span class="b-label">${label}</span>
           <button class="edit-pill" data-act="edit" data-id="${it.id}">${I.edit}Modifica</button></div>
         ${body}
-      </div></div>`;
+      </div><div class="timer"><i></i></div></div>`;
 }
 function under(it, on){
   if (!on) return '';
@@ -397,7 +540,7 @@ function under(it, on){
   const cie = it.kind === 'cie' ? `<div class="xpanel">
       <div class="xrow"><small>Numero della carta</small><b>${esc(it.number) || '—'}</b></div>
       <div class="xnote">Il PIN serve per entrare con la carta d'identità (app CieID). Il PUK serve a sbloccare il PIN se si blocca.</div></div>` : '';
-  return extra + cie + `<div class="under">Tocca di nuovo la carta per <b>nascondere</b></div>`;
+  return extra + cie + `<div class="under">${I.flip.replace('<svg', '<svg width="18" height="18"')}<span>Si gira da sola tra 30 secondi, oppure <b>toccala</b></span></div>`;
 }
 function flipCard(it){
   const on = S.flipped === it.id;
@@ -412,8 +555,14 @@ function flipCard(it){
 
 /* ---------- Voci dell'allarme ---------- */
 function vrow(v){
-  const t = VTYPES[v.type], open = S.vopen === v.id;
-  const sub = !(v.value || v.user) ? 'Non ancora inserito' : t.secret ? (v.type === 'login' ? esc(v.user) : '••••••') : esc(v.value);
+  const t = VTYPES[v.type], open = S.vopen === v.id, empty = !(v.value || v.user);
+  const sub = empty ? '<span class="empty">Non ancora inserito</span>' : t.secret ? (v.type === 'login' ? esc(v.user) : '••••••') : esc(v.value);
+  const editBtn = `<button class="vbtn alt icon" data-act="vedit" data-id="${v.id}" aria-label="Modifica ${esc(v.label)}">${I.edit}</button>`;
+  let btns;
+  if (empty) btns = '';
+  else if (t.secret) btns = `<button class="vbtn ${open?'alt':''}" data-act="vshow" data-id="${v.id}" aria-expanded="${open}">${open ? 'Nascondi' : I.eye + 'Mostra'}</button>`;
+  else btns = editBtn;
+  const call = !empty && v.type === 'phone' ? `<a class="chipbtn call" href="tel:${esc(v.value.replace(/[^\d+]/g,''))}">${I.phone}Chiama ${esc(v.value)}</a>` : '';
   let val = '';
   if (open && t.secret){
     if (v.type === 'code') val = digits(v.value || '', 'Codice');
@@ -421,32 +570,37 @@ function vrow(v){
       <div><div class="vsmall">Password</div><div class="vtext">${esc(v.value)||'—'}</div></div>`;
     else val = `<div class="vtext">${esc(v.value)||'—'}</div>`;
   }
+  const copy = open && v.value && v.type !== 'code' ? `<button class="chipbtn" data-act="copy" data-id="${v.id}">${I.copy}Copia</button>` : '';
   return `<div class="vrow ${open?'open':''}">
-    <div class="vhead"><span class="vic">${I[t.icon]}</span>
-      <span class="vlabel"><b>${wrapSlash(v.label)}</b>${open ? '' : `<span class="muted">${sub}</span>`}</span>
-      ${t.secret ? `<button class="vbtn ${open?'alt':''}" data-act="vshow" data-id="${v.id}">${open?'Nascondi':'Mostra'}</button>`
-                 : `<button class="vbtn alt icon" data-act="vedit" data-id="${v.id}" aria-label="Modifica ${esc(v.label)}">${I.edit}</button>`}
+    <div class="vhead"><span class="vic s-${v.sec}">${I[t.icon]}</span>
+      <span class="vlabel"><b>${wrapSlash(v.label)}</b>${open ? '' : `<span class="muted${t.secret && !empty ? '' : ' plain'}">${sub}</span>`}</span>
+      ${btns}
     </div>
+    ${call ? `<div class="vcall">${call}</div>` : ''}
+    ${empty ? `<div class="vcall"><button class="chipbtn addfull" data-act="vedit" data-id="${v.id}">${I.plus}Inserisci</button></div>` : ''}
     ${open ? `<div class="vval">${val}
-      <div class="vfoot"><span class="muted" style="font-size:.88rem">Si nasconde da solo tra 30 secondi</span>
-        <button class="linkbtn" data-act="vedit" data-id="${v.id}">${I.edit}Modifica</button></div></div>` : ''}
+      <div class="vtimer" aria-hidden="true"><i></i></div>
+      <div class="vfoot"><span class="muted">Si nasconde da solo tra 30 secondi</span>
+        <span class="vacts">${copy}<button class="chipbtn" data-act="vedit" data-id="${v.id}">${I.edit}Modifica</button></span></div></div>` : ''}
   </div>`;
 }
 
 /* ---------- Schermate ---------- */
 const V = {
   home: () => {
-    const items = D.items;
+    const items = D.items, n = D.alarm.length;
     return `
-    <div class="top"><h1>Papà<span style="color:var(--primary)">+</span></h1>
-      <button class="icon-btn" data-act="size" aria-label="Cambia grandezza del testo">A<span style="font-size:1.3em">A</span></button></div>
-    <p class="lead">Tocca una carta: si gira e ti mostra il codice.</p>
+    <div class="top home-top">
+      <div class="brand"><span class="logo">${I.card}</span>
+        <div><h1>Papà<span class="plus">+</span></h1><p class="tagline">I tuoi codici, sempre con te</p></div></div>
+      <button class="size-btn" data-act="size" aria-label="Cambia grandezza del testo"><span>A<span style="font-size:1.3em">A</span></span><small>Testo</small></button></div>
+    <p class="lead">${I.hand}Tocca una carta: si gira e ti mostra il codice.</p>
     ${D.example ? `<div class="example">${I.info}<span>Questi sono <b>codici di esempio</b>. Tocca una carta e poi «Modifica» per scrivere quelli veri. <button data-act="clearExample">Ho capito</button></span></div>` : ''}
     <div class="list">${items.map(flipCard).join('')}</div>
-    <div style="margin-top:18px"><button class="btn btn-dashed" data-act="add">${I.plus}Aggiungi</button></div>
-    <div class="section-t">Altro</div>
-    <button class="tile" data-act="alarm"><span class="ic" style="background:${COLORS.verde}">${I.house}</span>
-      <span style="flex:1"><b>Allarme ${ALARM}</b><br><span class="muted">${D.alarm.length} ${D.alarm.length===1?'voce':'voci'}</span></span>
+    <div style="margin-top:18px"><button class="btn btn-dashed" data-act="add">${I.plus}Aggiungi un codice</button></div>
+    <div class="section-t">Casa</div>
+    <button class="alarm-tile" data-act="alarm"><span class="ic">${I.house}</span>
+      <span style="flex:1;position:relative;z-index:1"><b>Allarme ${ALARM}</b><small>Codici, parole chiave e accessi · ${n} ${n===1?'voce':'voci'}</small></span>
       <span class="chev">${I.next}</span></button>`;
   },
   add: () => {
@@ -478,15 +632,18 @@ const V = {
   alarm: () => {
     const q = S.q.toLowerCase().trim();
     const match = v => !q || (v.label+' '+(v.user||'')).toLowerCase().includes(q);
-    const secs = VSECTIONS.map(([k, title]) => [title, D.alarm.filter(v => v.sec === k && match(v))]).filter(([,l]) => l.length);
+    const secs = VSECTIONS.map(([k, title, icon, short]) => ({k, title, icon, short, list: D.alarm.filter(v => v.sec === k && match(v))})).filter(x => x.list.length);
     return `
     <div class="top"><button class="back" data-act="home">${I.back}Indietro</button></div>
     <div class="hero"><span class="big-ic">${I.house}</span>
       <div><h1>Allarme ${ALARM}</h1><p>Tocca «Mostra» per vedere un codice.</p></div></div>
-    ${D.alarm.length > 6 ? `<input class="input" id="f-q" type="search" value="${esc(S.q)}" placeholder="Cerca un codice…" autocomplete="off" style="margin-top:16px">` : ''}
-    ${secs.length ? secs.map(([title, list]) => `<div class="section-t">${title}</div><div class="vlist">${list.map(vrow).join('')}</div>`).join('')
-      : `<p class="muted" style="text-align:center;padding:28px 0">${q ? 'Nessun risultato.' : 'Ancora nessuna voce.'}</p>`}
-    <div style="margin-top:24px"><button class="btn btn-primary" data-act="vnew">${I.plus}Aggiungi una voce</button></div>`;
+    ${!q && secs.length > 1 ? `<nav class="jump" aria-label="Vai alla sezione">${secs.map(x => `<button class="jump-b" data-act="jump" data-v="${x.k}"><span class="vsec-ic s-${x.k}" style="width:26px;height:26px;border-radius:8px">${I[x.icon]}</span>${x.short}</button>`).join('')}</nav>` : ''}
+    ${D.alarm.length > 6 ? `<div class="search">${I.search}<input class="input" id="f-q" type="search" value="${esc(S.q)}" placeholder="Cerca un codice…" autocomplete="off" aria-label="Cerca un codice"></div>` : ''}
+    ${secs.length ? secs.map(x => `<section class="vsec" id="sec-${x.k}">
+        <div class="section-t vsec-h"><span class="vsec-ic s-${x.k}">${I[x.icon]}</span>${x.title}<span class="count">${x.list.length}</span></div>
+        <div class="vlist">${x.list.map(vrow).join('')}</div></section>`).join('')
+      : `<p class="muted" style="text-align:center;padding:28px 0">${q ? 'Nessun risultato per «' + esc(S.q) + '».' : 'Ancora nessuna voce.'}</p>`}
+    <div style="margin-top:26px"><button class="btn btn-primary" data-act="vnew">${I.plus}Aggiungi una voce</button></div>`;
   },
 
   edit: () => {
@@ -629,6 +786,13 @@ const A = {
     buzz(); S.vopen = S.vopen === el.dataset.id ? null : el.dataset.id; render();
     clearTimeout(vTimer); if (S.vopen) vTimer = setTimeout(() => { S.vopen = null; render(); }, FLIP_BACK_S*1000);
   },
+  jump: el => { const t = document.getElementById('sec-' + el.dataset.v); if (t) t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'}); },
+  copy: el => {
+    const v = vById(el.dataset.id); if (!v) return;
+    const done = () => { buzz(); toast('Copiato ✓'); };
+    try { navigator.clipboard.writeText(v.value).then(done, () => toast('Non riesco a copiare: tieni premuto sul testo')); }
+    catch { toast('Non riesco a copiare: tieni premuto sul testo'); }
+  },
   vnew: () => go('vedit', {ret:'alarm', draft:{isNew:true, id:uid(), sec:'allarme', type:'code', label:'', value:'', user:''}}),
   vedit: el => go('vedit', {ret:'alarm', draft:{...vById(el.dataset.id)}}),
   vsec: el => { readDraft(); S.draft.sec = el.dataset.v; render(); },
@@ -672,7 +836,7 @@ render();
 <script>
 /* Aggiornamenti immediati: appena c'è una versione nuova, l'app si ricarica da sola */
 (() => {
-  const APP_VERSION = '20261127133813';
+  const APP_VERSION = '20261127135553';
   const editing = () => !!document.querySelector('.input:not(#f-q)') || !!document.querySelector('.overlay');
   function reloadOnce(v){
     try { if (sessionStorage.getItem('papa-reload') === v) return; sessionStorage.setItem('papa-reload', v); } catch (e) {}
