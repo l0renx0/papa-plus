@@ -601,10 +601,36 @@ render();
 </script>
 
 <script>
-if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
-}
-try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
+/* Aggiornamenti immediati: appena c'è una versione nuova, l'app si ricarica da sola */
+(() => {
+  const APP_VERSION = '20261127131739';
+  const editing = () => !!document.querySelector('.input:not(#f-q)') || !!document.querySelector('.overlay');
+  function reloadOnce(v){
+    try { if (sessionStorage.getItem('papa-reload') === v) return; sessionStorage.setItem('papa-reload', v); } catch (e) {}
+    location.reload();
+  }
+  let pending = null;
+  async function check(){
+    if (!navigator.onLine) return;
+    try {
+      const r = await fetch('version.json?t=' + Date.now(), {cache: 'no-store'});
+      const v = (await r.json()).version;
+      if (v && v !== APP_VERSION){ pending = v; if (!editing()) reloadOnce(v); }
+    } catch (e) {}
+  }
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    navigator.serviceWorker.register('sw.js', {updateViaCache: 'none'}).then(reg => {
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); });
+    }).catch(() => {});
+  }
+  check();
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
+  window.addEventListener('online', check);
+  setInterval(() => { if (!document.hidden) check(); }, 60000);
+  /* Se l'aggiornamento arriva mentre si scrive un codice, aspetta che abbia finito */
+  document.addEventListener('click', () => setTimeout(() => { if (pending && !editing()) reloadOnce(pending); }, 300), true);
+  try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
+})();
 </script>
 </body>
 </html>
